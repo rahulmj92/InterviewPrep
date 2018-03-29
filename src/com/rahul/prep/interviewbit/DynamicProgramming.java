@@ -661,12 +661,13 @@ public class DynamicProgramming {
 	}
 
 	private static int[][][][] scrambleMem;
+
 	public int isScramble(final String original, final String scrambled) {
-		
+
 		scrambleMem = new int[original.length()][original.length()][original.length()][original.length()];
-		for(int i = 0 ; i < original.length() ; i++)
-			for(int j = 0 ; j < original.length() ; j++)
-				for(int k = 0 ; k < original.length() ; k++)
+		for (int i = 0; i < original.length(); i++)
+			for (int j = 0; j < original.length(); j++)
+				for (int k = 0; k < original.length(); k++)
 					Arrays.fill(scrambleMem[i][j][k], -1);
 		return isScrambleRecHelper(original, scrambled, 0, original.length() - 1, 0, scrambled.length() - 1) ? 1 : 0;
 
@@ -676,38 +677,40 @@ public class DynamicProgramming {
 			int orgEndIndex, int scrStartIndex, int scrEndIndex) {
 
 		System.out.println(orgStartIndex + " " + orgEndIndex + " | " + scrStartIndex + " " + scrEndIndex);
-		
-		if(scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] != -1) {
+
+		if (scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] != -1) {
 			System.out.println("In mem");
 			return scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] == 0 ? false : true;
 		}
-		
+
 		// base cases
-		if(orgEndIndex == orgStartIndex && scrStartIndex == scrEndIndex) {
-			if(original.charAt(orgStartIndex) == scrambled.charAt(scrStartIndex)) {
+		if (orgEndIndex == orgStartIndex && scrStartIndex == scrEndIndex) {
+			if (original.charAt(orgStartIndex) == scrambled.charAt(scrStartIndex)) {
 				scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] = 1;
 				return true;
-			}
-			else {
+			} else {
 				scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] = 0;
 				return false;
 			}
 		}
 
-		if(!isAnagram(original, scrambled, orgStartIndex, orgEndIndex, scrStartIndex, scrEndIndex)) {
+		if (!isAnagram(original, scrambled, orgStartIndex, orgEndIndex, scrStartIndex, scrEndIndex)) {
 			System.out.println("not anagram");
 			scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] = 0;
 			return false;
 		}
-		
-		for (int i = 0 ; i < orgEndIndex - orgStartIndex ; i++) {
-			if (isScrambleRecHelper(original, scrambled, orgStartIndex , orgStartIndex+i, scrStartIndex, scrStartIndex+i)
-					&& isScrambleRecHelper(original, scrambled, orgStartIndex+i+1, orgEndIndex, scrStartIndex+i+1, scrEndIndex)) {
+
+		for (int i = 0; i < orgEndIndex - orgStartIndex; i++) {
+			if (isScrambleRecHelper(original, scrambled, orgStartIndex, orgStartIndex + i, scrStartIndex,
+					scrStartIndex + i)
+					&& isScrambleRecHelper(original, scrambled, orgStartIndex + i + 1, orgEndIndex,
+							scrStartIndex + i + 1, scrEndIndex)) {
 				scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] = 1;
 				return true;
-			}
-			else if (isScrambleRecHelper(original, scrambled, orgStartIndex, orgStartIndex+i, scrEndIndex-i, scrEndIndex)
-					&& isScrambleRecHelper(original, scrambled,  orgStartIndex+i+1, orgEndIndex, scrStartIndex, scrEndIndex-i-1)) {
+			} else if (isScrambleRecHelper(original, scrambled, orgStartIndex, orgStartIndex + i, scrEndIndex - i,
+					scrEndIndex)
+					&& isScrambleRecHelper(original, scrambled, orgStartIndex + i + 1, orgEndIndex, scrStartIndex,
+							scrEndIndex - i - 1)) {
 				scrambleMem[orgStartIndex][orgEndIndex][scrStartIndex][scrEndIndex] = 1;
 				return true;
 			}
@@ -716,158 +719,298 @@ public class DynamicProgramming {
 		return false;
 
 	}
-	
-	private boolean isAnagram(String org, String scr, int orgStartIndex,
-			int orgEndIndex, int scrStartIndex, int scrEndIndex) {
+
+	private boolean isAnagram(String org, String scr, int orgStartIndex, int orgEndIndex, int scrStartIndex,
+			int scrEndIndex) {
 		int orgCharset[] = new int[26];
 		Arrays.fill(orgCharset, 0);
-		for(int i = orgStartIndex ; i <= orgEndIndex ; i++)
+		for (int i = orgStartIndex; i <= orgEndIndex; i++)
 			orgCharset[org.toLowerCase().charAt(i) - 97]++;
-		for(int i = scrStartIndex ; i <= scrEndIndex ; i++)
+		for (int i = scrStartIndex; i <= scrEndIndex; i++)
 			orgCharset[scr.toLowerCase().charAt(i) - 97]--;
-		
-		for(int i = 0 ; i < 26 ; i++)
-			if(orgCharset[i] != 0)
+
+		for (int i = 0; i < 26; i++)
+			if (orgCharset[i] != 0)
 				return false;
 		return true;
 	}
 
 	public int repeatingSubsequence(String A) {
-		
-		if(A == null || A.length() == 0)
+
+		if (A == null || A.length() == 0)
 			return 0;
-		
+
 		int n = A.length();
-		int rs[][] = new int[n+1][n+1];
-		
-		for(int i = 0 ; i <= n ; i++)
+		int rs[][] = new int[n + 1][n + 1];
+
+		for (int i = 0; i <= n; i++)
 			Arrays.fill(rs[i], 0);
-		
-		for(int i = 1 ; i <= n ; i++) {
-			for(int j = 1 ; j <= n ; j++) {
-				
-				if(i != j && A.charAt(i-1) == A.charAt(j-1))
-					rs[i][j] = rs[i-1][j-1] + 1;
+
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+
+				if (i != j && A.charAt(i - 1) == A.charAt(j - 1))
+					rs[i][j] = rs[i - 1][j - 1] + 1;
 				else {
-					rs[i][j] = Math.max(rs[i][j-1], rs[i-1][j]);
+					rs[i][j] = Math.max(rs[i][j - 1], rs[i - 1][j]);
 				}
-				
+
 			}
 		}
-		
-		for(int i = 1 ; i <= n ; i++)
-			for(int j = 1 ; j <= n ; j++)
-				if(rs[i][j] >= 2)
+
+		for (int i = 1; i <= n; i++)
+			for (int j = 1; j <= n; j++)
+				if (rs[i][j] >= 2)
 					return 1;
-		
+
 		return 0;
-    }
-	
+	}
+
 	public int minPathSum(ArrayList<ArrayList<Integer>> A) {
-		
+
 		int numRows = A.size();
 		int numCols = A.get(0).size();
-		
+
 		int minSum[][] = new int[numRows][numCols];
-		
-		for(int i = 0 ; i < numRows ; i++) {
-			for (int j = 0 ; j < numCols ; j++) {
-				if(i == 0 & j == 0)
+
+		for (int i = 0; i < numRows; i++) {
+			for (int j = 0; j < numCols; j++) {
+				if (i == 0 & j == 0)
 					minSum[i][j] = A.get(i).get(j);
-				else if(i == 0)
-					minSum[i][j] = A.get(i).get(j) + minSum[i][j-1];
-				else if(j == 0)
-					minSum[i][j] = A.get(i).get(j) + minSum[i-1][j];
+				else if (i == 0)
+					minSum[i][j] = A.get(i).get(j) + minSum[i][j - 1];
+				else if (j == 0)
+					minSum[i][j] = A.get(i).get(j) + minSum[i - 1][j];
 				else
-					minSum[i][j] = A.get(i).get(j) + Math.min(minSum[i][j-1],minSum[i-1][j]);
+					minSum[i][j] = A.get(i).get(j) + Math.min(minSum[i][j - 1], minSum[i - 1][j]);
 			}
 		}
-		
-		return minSum[numRows-1][numCols-1];
-    }
-	
+
+		return minSum[numRows - 1][numCols - 1];
+	}
+
 	public int isInterleave(String A, String B, String C) {
-		
-		if(lcs(C,A) == A.length() && lcs(C,B) == B.length() && A.length() + B.length() == C.length())
+
+		if (lcs(C, A) == A.length() && lcs(C, B) == B.length() && A.length() + B.length() == C.length())
 			return 1;
-		
+
 		return 0;
-		
-    }
-	
+
+	}
+
 	private int lcs(String str1, String str2) {
-		
+
 		int m = str1.length();
 		int n = str2.length();
-		
-		int lcs[][] = new int[m+1][n+1];
-		
-		for(int i = 0 ; i <= m ; i++) {
-			for(int j = 0 ; j <= n ; j++) {
-				if(i == 0 || j == 0)
+
+		int lcs[][] = new int[m + 1][n + 1];
+
+		for (int i = 0; i <= m; i++) {
+			for (int j = 0; j <= n; j++) {
+				if (i == 0 || j == 0)
 					lcs[i][j] = 0;
-				else if(str1.charAt(i-1) == str2.charAt(j-1))
-					lcs[i][j] = lcs[i-1][j-1] + 1;
+				else if (str1.charAt(i - 1) == str2.charAt(j - 1))
+					lcs[i][j] = lcs[i - 1][j - 1] + 1;
 				else
-					lcs[i][j] = Math.max(lcs[i-1][j],lcs[i][j-1]);
+					lcs[i][j] = Math.max(lcs[i - 1][j], lcs[i][j - 1]);
 			}
 		}
 		return lcs[m][n];
 	}
-	
-	//Min Sum Path in Triangle
+
+	// Min Sum Path in Triangle
 	public int minimumTotal(ArrayList<ArrayList<Integer>> a) {
-		
+
 		int numRows = a.size();
 		int numCols = a.get(numRows - 1).size();
-		
+
 		int minSum[][] = new int[numRows][numCols];
-		
-		for(int i = 0 ; i < numRows ; i++)
+
+		for (int i = 0; i < numRows; i++)
 			Arrays.fill(minSum[i], 0);
-		
-		for(int i = 0 ; i < numRows ; i++) {
-			for(int j = 0 ; j < a.get(i).size() ; j++) {
-				if(i == 0 && j == 0)
+
+		for (int i = 0; i < numRows; i++) {
+			for (int j = 0; j < a.get(i).size(); j++) {
+				if (i == 0 && j == 0)
 					minSum[i][j] = a.get(i).get(j);
-				else if(j == 0) {
-					minSum[i][j] = a.get(i).get(j) + minSum[i-1][j];
-				} else if(j == a.get(i).size() - 1) {
-					minSum[i][j] = a.get(i).get(j) + minSum[i-1][j];
+				else if (j == 0) {
+					minSum[i][j] = a.get(i).get(j) + minSum[i - 1][j];
+				} else if (j == a.get(i).size() - 1) {
+					minSum[i][j] = a.get(i).get(j) + minSum[i - 1][j];
 				} else {
-					minSum[i][j] = a.get(i).get(j) + Math.min(minSum[i-1][j-1], minSum[i-1][j+1]);
+					minSum[i][j] = a.get(i).get(j) + Math.min(minSum[i - 1][j - 1], minSum[i - 1][j + 1]);
 				}
 			}
 		}
-		
+
 		int min = Integer.MAX_VALUE;
-		for(int i = 0 ; i < numCols ; i++)
-			min = Math.min(min, a.get(numRows-1).get(i));
-		
+		for (int i = 0; i < numCols; i++)
+			min = Math.min(min, a.get(numRows - 1).get(i));
+
 		return min;
 	}
-	
-	public ArrayList<Integer> solveTusharBdayBombs(int R, ArrayList<Integer> S) {
-		
-		int kick[] = new int[R+1];
-		ArrayList<ArrayList<Integer>> friends = new ArrayList<>(); 
+
+	public ArrayList<Integer> solve(int R, ArrayList<Integer> S) {
+
+		int kick[] = new int[R + 1];
+		ArrayList<ArrayList<Integer>> friends = new ArrayList<>();
+		// friends.add(null);
 		Arrays.fill(kick, 0);
-		for(int i = 1 ; i <= R ; i++ ) {
+		int lasti = 0;
+		for (int i = 1; i <= R; i++) {
 			ArrayList<Integer> kickHist = new ArrayList<>();
-			for(int j = 0 ; j < S.size() ; j++) {
-				if(kick[i] < S.get(j-1) + kick[i - S.get(j-1)]) {
-					kick[i] = S.get(j-1) + kick[i - S.get(j-1)];
-					kickHist.clear();
-					kickHist.addAll(friends.get(j-1));
-					kickHist.add(j-1);
+			ArrayList<Integer> smallestKickHist = new ArrayList<>();
+			for (int j = 0; j < S.size(); j++) {
+				if (S.get(j) <= i) {
+					if (kick[i] <= S.get(j) + kick[i - S.get(j)]) {
+						kick[i] = S.get(j) + kick[i - S.get(j)];
+						kickHist.clear();
+						if (i - S.get(j) - 1 >= 0)
+							kickHist.addAll(friends.get(i - S.get(j) - 1));
+						kickHist.add(j);
+						if (lasti == i) {
+							int prevSum = 0;
+							int currSum = 0;
+							// check which is lexicographically smaller
+							for (int k = 0; k < smallestKickHist.size(); k++)
+								prevSum += smallestKickHist.get(k);
+							for (int k = 0; k < kickHist.size(); k++)
+								currSum += kickHist.get(k);
+							if (prevSum > currSum)
+								smallestKickHist = kickHist;
+						} else {
+							smallestKickHist = kickHist;
+						}
+					}
+				}
+				// if(i == R) {
+				// kickHist.forEach(s -> System.out.println(s));
+				// if(kickHist.size() > 0)
+				// break;
+				// }
+				// System.out.println("i: " + i + " kick[i]: " + kick[i]);
+				// kickHist.forEach(s -> System.out.println(s));
+				// System.out.println();
+				lasti = i;
+			}
+			friends.add(smallestKickHist);
+			// kickHist.clear();
+		}
+
+		return friends.get(R - 1);
+	}
+
+	public int canJump(ArrayList<Integer> A) {
+
+		if (A == null || A.size() == 0)
+			return 0;
+
+		if (A.size() == 1)
+			return 1;
+
+		if (A.get(0) == 0)
+			return 0;
+
+		int minJumps[] = new int[A.size()];
+		Arrays.fill(minJumps, 0);
+		for (int i = 1; i < A.size(); i++) {
+			int minJumpsToI = Integer.MAX_VALUE;
+			for (int j = 0; j < i; j++) {
+				int maxJumpsFromJ = A.get(j);
+				if (j + maxJumpsFromJ >= i && (minJumps[j] != 0 || (j == 0 && maxJumpsFromJ != 0))) {
+					minJumpsToI = Math.min(minJumpsToI, minJumps[j] + 1);
 				}
 			}
-			friends.add(kickHist);
+			if (minJumpsToI != Integer.MAX_VALUE)
+				minJumps[i] = minJumpsToI;
+			else
+				minJumps[i] = 0;
+			System.out.println("minJumps[" + i + "]: " + minJumps[i]);
 		}
+
+		return minJumps[A.size() - 1];
+	}
+	
+	public int canJump2(ArrayList<Integer> A) {
+	    if (A.size() <= 1)
+            return 1;
+ 
+        // Return -1 if not possible to jump
+        if (A.get(0) == 0)
+            return 0;
+ 
+        // initialization
+        int maxReach = A.get(0);
+        int step = A.get(0);
+        int jump = 1;
+ 
+ 
+        // Start traversing array
+        for (int i = 1; i < A.size(); i++)
+        {
+            // Check if we have reached the end of the array
+            if (i == A.size() - 1) {
+                return jump != -1 ? 1 : 0;
+            }
+ 
+            // updating maxReach
+            maxReach = Math.max(maxReach, i+A.get(i));
+ 
+            // we used a step to get to the current index
+            step--;
+ 
+            // If no further steps left
+            if (step == 0)
+            {
+                //  we must have used a jump
+                jump++;
+                  
+                //Check if the current index/position  or lesser index
+                // is the maximum reach point from the previous indexes
+                if(i>=maxReach)
+                   return 0;
+ 
+                // re-initialize the steps to the amount
+                // of steps to reach maxReach from position i.
+                step = maxReach - i;
+            }
+        }
+ 
+        return 0;
+	}
+	
+	public int minJump(ArrayList<Integer> A) {
 		
-		return friends.get(R-1);
+		if(A.size() <= 1)
+			return 0;
+		
+		if(A.get(0) == 0)
+			return 0;
+		
+		int minJumps[] = new int[A.size()];
+		Arrays.fill(minJumps, 0);
+		for (int i = 1; i < A.size(); i++) {
+			int minJumpsToI = Integer.MAX_VALUE;
+			for (int j = 0; j < i; j++) {
+				int maxJumpsFromJ = A.get(j);
+				if (j + maxJumpsFromJ >= i && (minJumps[j] != 0 || (j == 0 && maxJumpsFromJ != 0))) {
+					minJumpsToI = Math.min(minJumpsToI, minJumps[j] + 1);
+				}
+			}
+			if (minJumpsToI != Integer.MAX_VALUE)
+				minJumps[i] = minJumpsToI;
+			else
+				minJumps[i] = 0;
+			System.out.println("minJumps[" + i + "]: " + minJumps[i]);
+		}
+
+		return minJumps[A.size() - 1];
+		
     }
 	
+	public ArrayList<String> wordBreak(String A, ArrayList<String> B) {
+    }
+
 	public static void main(String[] args) {
 		DynamicProgramming dp = new DynamicProgramming();
 		// System.out.println(dp.numDecodings("2611055971756562"));
@@ -875,7 +1018,10 @@ public class DynamicProgramming {
 		coins.add(1);
 		coins.add(2);
 		coins.add(3);
-		//System.out.println(dp.isScramble("abbbcbaaccacaacc", "acaaaccabcabcbcb"));
-		System.out.println(dp.repeatingSubsequence("abba"));
+		// System.out.println(dp.isScramble("abbbcbaaccacaacc",
+		// "acaaaccabcabcbcb"));
+		//System.out.println(dp.repeatingSubsequence("abba"));
+		Integer a[] = {10, 0, 1, 1, 0};
+		System.out.println(dp.canJump(new ArrayList<Integer>(Arrays.asList(a))));
 	}
 }
